@@ -16,7 +16,7 @@ const LoginPage = () => {
         try {
             const data = await loginUser(username, password)
 
-
+            localStorage.setItem("token", data.accessToken)
             console.log(data)
         } catch(error) {
             setError("Invalid username or password")
