@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getProducts } from "../services/productApi";
-import {useDebounce} from '../hooks/useDebounce.js'
+import useDebounce from "../hooks/useDebounce";
+
 const Products = () => {
 
     const [products, setProducts] = useState([])
@@ -13,11 +14,14 @@ const Products = () => {
 
     const [search, setSearch] = useState("")
 
-    const debounceSearch = useDebounce(search, 500)
+    const debounceSearch = useDebounce (search, 500)
 
     const totalPages = Math.ceil(total / pageSize)
 
     useEffect(()=> {
+
+        const controller = new AbortController()
+
         const fetchProducts = async () => {
             try {
                 setIsLoading(true)
@@ -25,12 +29,17 @@ const Products = () => {
 
                 const skip = (page - 1) * pageSize
 
-                const data = await getProducts(pageSize, skip)
+                const data = await getProducts(pageSize, skip, debounceSearch, controller.signal)
 
                 setProducts(data.products)
                 setTotal(data.total)
 
             }catch(error) {
+                if(error) {
+                    if(error.name === "CancelError"){
+                        return 
+                    }
+                }
                 setError("Failed to load products")
             } finally {
                 setIsLoading(false)
@@ -39,7 +48,7 @@ const Products = () => {
         }
 
         fetchProducts()
-    }, [page, pageSize])
+    }, [page, pageSize, debounceSearch])
     
 
     return(
