@@ -7,11 +7,24 @@ const Products = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState("")
 
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+    const [total, setTotal] = useState(0)
+
+    const totalPages = Math.ceil(total / pageSize)
+
     useEffect(()=> {
         const fetchProducts = async () => {
             try {
-                const data = await getProducts()
+                setIsLoading(true)
+                setError("")
+
+                const skip = (page - 1) * pageSize
+
+                const data = await getProducts(pageSize, skip)
+
                 setProducts(data.products)
+                setTotal(data.total)
 
             }catch(error) {
                 setError("Failed to load products")
@@ -22,7 +35,7 @@ const Products = () => {
         }
 
         fetchProducts()
-    }, [])
+    }, [page, pageSize])
     
 
     return(
@@ -208,31 +221,50 @@ const Products = () => {
 
                 <div className="mt-6 flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-sm text-gray-500"> 
-                        Showing 
+                        Showing{" "}
                         <span className="font-medium text-gray-700">
-                            1–10
-                        </span> {" "} of <span className="font-medium text-gray-700">194</span> 
+                            {total === 0 ? 0 : (page - 1) * pageSize + 1}
+                            {"-"}
+                            {Math.min(page * pageSize, total)}
+                        </span> {" "} of{" "} 
+                        <span className="font-medium text-gray-700">
+                            {total}
+                        </span> 
                     </p>
                     
                     <div className="flex items-center gap-2">
-                        <button className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"> 
+                        <button 
+                        disabled={page === 1}
+                        onClick={() => setPage(page - 1)}
+                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"> 
                             Previous 
                         </button> 
                         
-                        <button className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white"> 
-                            1 
-                        </button> 
+                        {Array.from({ length: totalPages}, (_, index) => {
+                            const pageNumber = index + 1
+
+                            return(
+                                <button
+                                key={pageNumber}
+                                onClick={()=> setPage(pageNumber)}
+                                className={`rounded-lg px-3 py-2 text-sm ${page === pageNumber
+                                    ? "bg-blue-600 font-medium text-white"
+                                    : "border border-gray-300 text-gray-600 hover:bg-gray-50"}
+                                   `}
+                                > 
+                                {pageNumber}
+                                </button>
+                            )
+                            })
+                        }
                         
-                        <button className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"> 
-                            2 
-                        </button> 
-                        
-                        <button className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"> 
-                            3 
-                        </button> 
-                        <button className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"> 
-                            Next 
-                        </button> 
+                        <button
+                        disabled={page === totalPages}
+                        onClick={() => setPage(page + 1)}
+                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Next
+                        </button>
                     </div> 
                 </div> 
             </main>
