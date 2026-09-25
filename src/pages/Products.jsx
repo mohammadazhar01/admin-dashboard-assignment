@@ -219,7 +219,26 @@ const Products = () => {
                     ))} 
                 </div>
 
-                <div className="mt-6 flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2 mt-2">
+                        <label className="text-sm text-gray-500">
+                            Rows per page:
+                        </label>
+                        
+                        <select
+                        value={pageSize}
+                        onChange={(e) => {
+                            setPageSize(Number(e.target.value));
+                            setPage(1) }}
+                        className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500">
+                        
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={50}>50</option>
+                        </select>
+                </div>
+
+                <div className="mt-2 flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+                    
                     <p className="text-sm text-gray-500"> 
                         Showing{" "}
                         <span className="font-medium text-gray-700">
