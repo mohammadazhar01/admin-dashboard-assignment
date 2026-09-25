@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getProducts } from "../services/productApi";
-
+import {useDebounce} from '../hooks/useDebounce.js'
 const Products = () => {
 
     const [products, setProducts] = useState([])
@@ -10,6 +10,10 @@ const Products = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [total, setTotal] = useState(0)
+
+    const [search, setSearch] = useState("")
+
+    const debounceSearch = useDebounce(search, 500)
 
     const totalPages = Math.ceil(total / pageSize)
 
@@ -63,7 +67,14 @@ const Products = () => {
                         <input 
                           type="text"
                           placeholder="Search products"
-                          className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          value={search}
+
+                          onChange = {(e)=>{ 
+                            setSearch(e.target.value)
+                            setPage(1)}
+                          }
+
+                          className= "w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
                     </div>
 
