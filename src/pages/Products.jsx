@@ -1,11 +1,29 @@
-
-const products = [ { id: 1, title: "Essence Mascara Lash Princess", category: "beauty", price: 9.99, rating: 4.94, stock: 5, thumbnail: "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp", },
-                   { id: 2, title: "Eyeshadow Palette with Mirror", category: "beauty", price: 19.99, rating: 3.28, stock: 44, thumbnail: "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/thumbnail.webp", },
-                { id: 3, title: "Powder Canister", category: "beauty", price: 14.99, rating: 4.59, stock: 59, thumbnail: "https://cdn.dummyjson.com/product-images/beauty/powder-canister/thumbnail.webp", }, 
-            ];
+import { useEffect, useState } from "react";
+import { getProducts } from "../services/productApi";
 
 const Products = () => {
 
+    const [products, setProducts] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState("")
+
+    useEffect(()=> {
+        const fetchProducts = async () => {
+            try {
+                const data = await getProducts()
+                setProducts(data.products)
+
+            }catch(error) {
+                setError("Failed to load products")
+            } finally {
+                setIsLoading(false)
+            }
+
+        }
+
+        fetchProducts()
+    }, [])
+    
 
     return(
         <div className= "min-h-screen bg-gray-50">
@@ -25,7 +43,7 @@ const Products = () => {
                     </button>
                 </div>
             </header>
-
+                
             <main className="p-4 sm:p-6 lg:p-8">
                 <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div className="w-full lg:max-w-md">
@@ -53,86 +71,102 @@ const Products = () => {
                     </div>
                 </div>
 
-                <div className="hidden overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm md:block">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="border-b border-gray-200 bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                        Product
-                                    </th>
+                {
+                isLoading ? 
+                (
+                <div className="flex min-h-screen items-center justify-center">
+                    <p className="text-gray-500">Loading products...</p>
+                </div> 
+                ) : error ? 
 
-                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                        Category
-                                    </th>
+                (
+                    <div className="flex min-h-screen items-center justify-center">
+                        <p className="text-red-500">{error}</p>
+                    </div> 
+                ) : 
+                    
+                (
 
-                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                        Price
-                                    </th>
-
-                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                        Rating
-                                    </th>
-
-                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                        Stock
-                                    </th>
-
-                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                        Action
-                                    </th>
-                                </tr>
-                            </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                    {products.map((product) => (
-                                        <tr key= {product.id} className="transition hover:bg-gray-50">
-
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-4">
-                                                    <img src={product.thumbnail} 
-                                                      alt={product.title} 
-                                                      className="h-12 w-12 rounded-lg object-cover" 
-                                                    />
-
-                                                    <div> 
-                                                        <p className="font-medium text-gray-900">
-                                                            {product.title} 
-                                                        </p> 
-                                                        <p className="text-xs text-gray-500">
-                                                            ID: #{product.id} 
-                                                        </p> 
+                    <div className="hidden overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm md:block">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="border-b border-gray-200 bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Product
+                                        </th>
+    
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Category
+                                        </th>
+    
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Price
+                                        </th>
+    
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Rating
+                                        </th>
+    
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Stock
+                                        </th>
+    
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {products.map((product) => (
+                                            <tr key= {product.id} className="transition hover:bg-gray-50">
+    
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-4">
+                                                        <img src={product.thumbnail} 
+                                                          alt={product.title} 
+                                                          className="h-12 w-12 rounded-lg object-cover" 
+                                                        />
+    
+                                                        <div> 
+                                                            <p className="font-medium text-gray-900">
+                                                                {product.title} 
+                                                            </p> 
+                                                            <p className="text-xs text-gray-500">
+                                                                ID: #{product.id} 
+                                                            </p> 
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-
-                                            <td className="px-6 py-4">
-                                                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium capitalize text-gray-700">
-                                                    {product.category} 
-                                                </span> 
-                                            </td> 
-                                            <td className="px-6 py-4 font-medium text-gray-900"> 
-                                                ${product.price} 
-                                            </td> 
-                                            <td className="px-6 py-4">
-                                                <span className="text-sm text-gray-700"> 
-                                                    {product.rating} 
-                                                </span> 
-                                            </td>
-                                            <td className="px-6 py-4"> 
-                                                <span className={`text-sm font-medium ${ product.stock < 10 ? "text-red-600" : "text-green-600" }`} >
-                                                    {product.stock} in stock 
-                                                </span> </td> <td className="px-6 py-4"> 
-                                                <button className="text-sm font-medium text-blue-600 hover:text-blue-800">
-                                                    View 
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                        </table>
+                                                </td>
+    
+                                                <td className="px-6 py-4">
+                                                    <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium capitalize text-gray-700">
+                                                        {product.category} 
+                                                    </span> 
+                                                </td> 
+                                                <td className="px-6 py-4 font-medium text-gray-900"> 
+                                                    ${product.price} 
+                                                </td> 
+                                                <td className="px-6 py-4">
+                                                    <span className="text-sm text-gray-700"> 
+                                                        {product.rating} 
+                                                    </span> 
+                                                </td>
+                                                <td className="px-6 py-4"> 
+                                                    <span className={`text-sm font-medium ${ product.stock < 10 ? "text-red-600" : "text-green-600" }`} >
+                                                        {product.stock} in stock 
+                                                    </span> </td> <td className="px-6 py-4"> 
+                                                    <button className="text-sm font-medium text-blue-600 hover:text-blue-800">
+                                                        View 
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-
+                ) }
                 <div className="space-y-4 md:hidden"> 
                     {products.map((product) => ( 
                         <div key={product.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm" > 
@@ -200,7 +234,7 @@ const Products = () => {
                             Next 
                         </button> 
                     </div> 
-                </div>
+                </div> 
             </main>
         </div>
     )
