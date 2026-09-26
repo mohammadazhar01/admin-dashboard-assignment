@@ -1,6 +1,6 @@
 import api from './axios'
 
-export const getProducts = async(limit, skip, search, category,signal) => {
+export const getProducts = async(limit, skip, search, category, sortBy,signal) => {
     let url = `/products?limit${limit}&skip=${skip}`
 
     console.log(search)
@@ -9,6 +9,12 @@ export const getProducts = async(limit, skip, search, category,signal) => {
         url = `/products/search?q=${encodeURIComponent(search)}&limit${limit}&skip=${skip}`
     } else if(category) {
         url = `/products/category/${encodeURIComponent(category)}?limit=${limit}&skip=${skip}`
+    }
+    console.log(sortBy)
+
+    if(sortBy) {
+        console.log(sortBy)
+        url += `&sortBy=${sortBy}&order=asc`
     }
 
     const response = await api.get(url, {signal})

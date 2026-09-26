@@ -17,6 +17,8 @@ const Products = () => {
     const [categories, setCategories] = useState([])
     const [category, setCategory] = useState('')
 
+    const [sortBy, setSortBy] = useState("")
+
 
     const debounceSearch = useDebounce (search, 500)
 
@@ -32,8 +34,8 @@ const Products = () => {
                 setError("")
 
                 const skip = (page - 1) * pageSize
-
-                const data = await getProducts(pageSize, skip, debounceSearch, category,controller.signal)
+                console.log(sortBy)
+                const data = await getProducts(pageSize, skip, debounceSearch, category, sortBy, controller.signal)
 
                 console.log(data.products)
                 setProducts(data.products)
@@ -53,7 +55,7 @@ const Products = () => {
         }
 
         fetchProducts()
-    }, [page, pageSize, debounceSearch, category])
+    }, [page, pageSize, debounceSearch, category, sortBy])
 
     useEffect (() => {
         const fetchCategories = async () => {
@@ -122,11 +124,14 @@ const Products = () => {
                             })}
                         </select>
 
-                        <select className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
-                            <option>Sort by</option>
-                            <option>Title</option>
-                            <option>Price</option>
-                            <option>Rating</option>
+                        <select 
+                        value = {sortBy}
+                        onChange={(e)=> { setSortBy(e.target.value); setPage(1)} }
+                        className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
+                            <option value="">Sort by</option>
+                            <option value="price">Price</option>
+                            <option value="rating">Rating</option>
+                            <option value="title">Title</option>
                         </select>
                     </div>
                 </div>
