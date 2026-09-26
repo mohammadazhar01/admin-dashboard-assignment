@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProducts } from "../services/productApi";
+import { getProducts, getCategories } from "../services/productApi";
 import useDebounce from "../hooks/useDebounce";
 
 const Products = () => {
@@ -13,6 +13,10 @@ const Products = () => {
     const [total, setTotal] = useState(0)
 
     const [search, setSearch] = useState("")
+
+    const [categories, setCategories] = useState([])
+    const [category, setCategory] = useState('')
+
 
     const debounceSearch = useDebounce (search, 500)
 
@@ -29,8 +33,9 @@ const Products = () => {
 
                 const skip = (page - 1) * pageSize
 
-                const data = await getProducts(pageSize, skip, debounceSearch, controller.signal)
+                const data = await getProducts(pageSize, skip, debounceSearch, category,controller.signal)
 
+                console.log(data.products)
                 setProducts(data.products)
                 setTotal(data.total)
 
@@ -48,7 +53,24 @@ const Products = () => {
         }
 
         fetchProducts()
-    }, [page, pageSize, debounceSearch])
+    }, [page, pageSize, debounceSearch, category])
+
+    useEffect (() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await getCategories()
+                console.log(data)
+                setCategories(data)
+            } catch(error) {
+                console.error("Failed to load categories")
+            }
+
+            
+        }
+
+        fetchCategories()
+        console.log(categories)
+    }, [])
     
 
     return(
@@ -88,11 +110,16 @@ const Products = () => {
                     </div>
 
                     <div className="flex flex-col gap-3 sm:flex-row">
-                        <select className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
+                        <select 
+                        value={category}
+                        onChange={(e)=> {setCategory(e.target.value); setPage(1)}}
+                        className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
                             <option>All Categories</option>
-                            <option>Beauty</option>
-                            <option>Fragrances</option>
-                            <option>Furniture</option>
+                            {categories.map((item)=> {
+                                return <option key={item.slug} value={item.slug}>
+                                    {item.name}
+                                </option>
+                            })}
                         </select>
 
                         <select className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
