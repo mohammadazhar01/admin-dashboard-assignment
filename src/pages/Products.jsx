@@ -1,28 +1,58 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getProducts, getCategories } from "../services/productApi";
 import useDebounce from "../hooks/useDebounce";
 
 const Products = () => {
+    const [searchParams, setSearchParams] = useSearchParams()
 
     const [products, setProducts] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState("")
 
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
+    const urlPage = Number(searchParams.get("page"))
+    const [page, setPage] = useState(Number.isInteger(urlPage) && urlPage >= 1 ? urlPage : 1)
+
+    const validPageSizes = [10, 20, 50]
+    const urlPageSize = Number(searchParams.get("pageSize"))
+
+    const [pageSize, setPageSize] = useState(validPageSizes.includes(urlPageSize)? urlPageSize:10)
     const [total, setTotal] = useState(0)
 
-    const [search, setSearch] = useState("")
+    const [search, setSearch] = useState(searchParams.get("search") || "")
 
     const [categories, setCategories] = useState([])
-    const [category, setCategory] = useState('')
+    const [category, setCategory] = useState(searchParams.get("category") || "")
 
-    const [sortBy, setSortBy] = useState("")
+    const validSortOptions = ["price", "rating", "title"];
 
+    const urlSort = searchParams.get("sort");
+    
+    const [sortBy, setSortBy] = useState(
+      validSortOptions.includes(urlSort) ? urlSort : ""
+    );
 
     const debounceSearch = useDebounce (search, 500)
 
     const totalPages = Math.ceil(total / pageSize)
+
+    useEffect(()=> {
+        if(totalPages > 0 && page > totalPages) {
+            setPage(totalPages)
+        }
+    }, [page, totalPages])
+
+    useEffect(() => {
+        if (category && categories.length > 0) {
+          const isValidCategory = categories.some(
+            (item) => item.slug === category
+          );
+      
+          if (!isValidCategory) {
+            setCategory("");
+          }
+        }
+    }, [category, categories])
 
     useEffect(()=> {
 
@@ -73,6 +103,16 @@ const Products = () => {
         fetchCategories()
         console.log(categories)
     }, [])
+
+    useEffect(() => {
+        setSearchParams({
+            page: page.toString(),
+            pageSize: pageSize.toString(),
+            search,
+            category,
+            sort: sortBy,
+        })
+    }, [page, pageSize, search, category, sortBy, setSearchParams])
     
 
     return(
