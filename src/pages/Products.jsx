@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { getProducts, getCategories } from "../services/productApi"
 import useDebounce from "../hooks/useDebounce"
 import { deleteProduct } from "../services/productApi"
 
 const Products = () => {
+    const navigate = useNavigate()
     const [searchParams, setSearchParams] = useSearchParams()
 
     const [products, setProducts] = useState([])
@@ -190,7 +191,9 @@ const Products = () => {
                         </p>
                     </div>
 
-                    <button className= "rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700">
+                    <button 
+                    onClick={() => navigate("/products/add")}
+                    className= "rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700">
                         + Add product
                     </button>
                 </div>
@@ -323,8 +326,24 @@ const Products = () => {
                                                     <span className={`text-sm font-medium ${ product.stock < 10 ? "text-red-600" : "text-green-600" }`} >
                                                         {product.stock} in stock 
                                                     </span> </td> <td className="px-6 py-4"> 
-                                                    <button className="text-sm font-medium text-blue-600 hover:text-blue-800">
+                                                    <button 
+                                                    onClick={() => navigate(`/products/${product.id}`)}
+                                                    className="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer">
                                                         View 
+                                                    </button>
+
+                                                    <button
+                                                      onClick={() => navigate(`/products/${product.id}/edit`)}
+                                                      className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-green-600 hover:bg-red-100 cursor-pointer"
+                                                      >
+                                                        Edit
+                                                    </button>
+
+                                                    <button
+                                                      onClick={() => handleDelete(product.id)}
+                                                      className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100 cursor-pointer"
+                                                      >
+                                                        Delete
                                                     </button>
                                                 </td>
                                             </tr>
@@ -365,12 +384,21 @@ const Products = () => {
                                     {product.stock} in stock 
                                 </span> 
                                 
-                                <button className="text-sm font-medium text-blue-600"> 
+                                <button 
+                                  onClick={() => navigate(`/products/${product.id}`)}
+                                  className="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer">
                                     View 
+                                </button>
+
+                                <button
+                                    onClick={() => navigate(`/products/${product.id}/edit`)}
+                                    className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-green-600 hover:bg-red-100 cursor-pointer"
+                                    >
+                                      Edit
                                 </button> 
                                 <button
                                   onClick={() => handleDelete(product.id)}
-                                  className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
+                                  className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100 cursor-pointer"
                                 >
                                     Delete
                                 </button>

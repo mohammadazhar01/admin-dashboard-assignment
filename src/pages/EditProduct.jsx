@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getProductById, updateProduct } from "../services/productApi"
 
 const EditProduct = () => {
     const {id} = useParams()
+    const navigate = useNavigate()
+
     const [product, setProduct] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("")
@@ -100,7 +102,10 @@ try {
     });
 
     setProduct(data);
-    setSuccess("Product updated successfully");
+    setSuccess("Product updated successfully")
+    setTimeout(() => {
+        navigate("/products");
+    }, 1000);
 } catch (error) {
     setError("Failed to update product");
 } finally {
