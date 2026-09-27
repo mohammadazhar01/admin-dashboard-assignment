@@ -7,6 +7,8 @@ const Products = () => {
     const [searchParams, setSearchParams] = useSearchParams()
 
     const [products, setProducts] = useState([])
+    const [createdProducts, setCreatedProducts] = useState([])
+
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState("")
 
@@ -54,6 +56,14 @@ const Products = () => {
         }
     }, [category, categories])
 
+    useEffect(() => {
+        const savedProducts = JSON.parse(
+            localStorage.getItem("createdProducts") || "[]"
+        )
+        
+        setCreatedProducts(savedProducts)
+    }, [])
+
     useEffect(()=> {
 
         const controller = new AbortController()
@@ -63,17 +73,30 @@ const Products = () => {
                 setIsLoading(true)
                 setError("")
 
-                const skip = (page - 1) * pageSize
-                console.log(sortBy)
-                const data = await getProducts(pageSize, skip, debounceSearch, category, sortBy, controller.signal)
+                const startIndex = (page - 1) * pageSize;
 
-                console.log(data.products)
-                setProducts(data.products)
-                setTotal(data.total)
+                const localStart = Math.min(startIndex, createdProducts.length);
+                const localEnd = Math.min(startIndex + pageSize, createdProducts.length);
+        
+                const localProductsForPage = createdProducts.slice(
+                    localStart,
+                    localEnd
+                );
+        
+                const apiSkip = Math.max(
+                    0,
+                    startIndex - createdProducts.length
+                );
+        
+                const apiLimit = pageSize - localProductsForPage.length
+                const data = await getProducts(apiLimit, apiSkip, debounceSearch, category, sortBy, controller.signal)
+        
+                setProducts([...localProductsForPage, ...data.products]);
+                setTotal(data.total + createdProducts.length)
 
             }catch(error) {
                 if(error) {
-                    if(error.name === "CancelError"){
+                    if(error.name === "CanceledError"){
                         return 
                     }
                 }
@@ -85,7 +108,7 @@ const Products = () => {
         }
 
         fetchProducts()
-    }, [page, pageSize, debounceSearch, category, sortBy])
+    }, [page, pageSize, debounceSearch, category, sortBy, createdProducts])
 
     useEffect (() => {
         const fetchCategories = async () => {
