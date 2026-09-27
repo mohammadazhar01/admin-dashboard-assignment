@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { getProducts, getCategories } from "../services/productApi";
-import useDebounce from "../hooks/useDebounce";
+import { useEffect, useState } from "react"
+import { useSearchParams } from "react-router-dom"
+import { getProducts, getCategories } from "../services/productApi"
+import useDebounce from "../hooks/useDebounce"
+import { deleteProduct } from "../services/productApi"
 
 const Products = () => {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -63,8 +64,6 @@ const Products = () => {
         
         setCreatedProducts(savedProducts)
     }, [])
-
-    
 
     useEffect(()=> {
 
@@ -139,6 +138,44 @@ const Products = () => {
         })
     }, [page, pageSize, search, category, sortBy, setSearchParams])
     
+    const handleDelete = async (id) => {
+        const confirmed = window.confirm("Are you sure you want to delete this product?")
+
+        if (!confirmed) {
+            return;
+        }
+    
+        try {
+            setError("")
+
+            const localProduct = createdProducts.some(
+                (product) => product.id === id
+            )
+    
+            if (localProduct) {
+                const updatedProducts = createdProducts.filter(
+                    (product) => product.id !== id
+                );
+    
+                localStorage.setItem(
+                    "createdProducts",
+                    JSON.stringify(updatedProducts)
+                );
+    
+                setCreatedProducts(updatedProducts);
+                return;
+            }
+
+            await deleteProduct(id);
+    
+            setProducts((prevProducts) =>
+                prevProducts.filter((product) => product.id !== id)
+            )
+
+        } catch (error) {
+            setError("Failed to delete product");
+        }
+    }
 
     return(
         <div className= "min-h-screen bg-gray-50">
@@ -331,6 +368,12 @@ const Products = () => {
                                 <button className="text-sm font-medium text-blue-600"> 
                                     View 
                                 </button> 
+                                <button
+                                  onClick={() => handleDelete(product.id)}
+                                  className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
+                                >
+                                    Delete
+                                </button>
                             </div> 
                         </div> 
                     ))} 
