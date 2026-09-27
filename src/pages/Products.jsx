@@ -193,7 +193,7 @@ const Products = () => {
 
                     <button 
                     onClick={() => navigate("/products/add")}
-                    className= "rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700">
+                    className= "rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 cursor-pointer">
                         + Add product
                     </button>
                 </div>
@@ -220,7 +220,7 @@ const Products = () => {
                         <select 
                         value={category}
                         onChange={(e)=> {setCategory(e.target.value); setPage(1)}}
-                        className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
+                        className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500 cursor-pointer">
                             <option>All Categories</option>
                             {categories.map((item)=> {
                                 return <option key={item.slug} value={item.slug}>
@@ -232,7 +232,7 @@ const Products = () => {
                         <select 
                         value = {sortBy}
                         onChange={(e)=> { setSortBy(e.target.value); setPage(1)} }
-                        className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
+                        className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500 cursor-pointer">
                             <option value="">Sort by</option>
                             <option value="price">Price</option>
                             <option value="rating">Rating</option>
@@ -443,7 +443,7 @@ const Products = () => {
                         <button 
                         disabled={page === 1}
                         onClick={() => setPage(page - 1)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"> 
+                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 cursor-pointer"> 
                             Previous 
                         </button> 
                         
@@ -456,7 +456,7 @@ const Products = () => {
                                 onClick={()=> setPage(pageNumber)}
                                 className={`rounded-lg px-3 py-2 text-sm ${page === pageNumber
                                     ? "bg-blue-600 font-medium text-white"
-                                    : "border border-gray-300 text-gray-600 hover:bg-gray-50"}
+                                    : "border border-gray-300 text-gray-600 hover:bg-gray-50 cursor-pointer"}
                                    `}
                                 > 
                                 {pageNumber}
@@ -468,7 +468,7 @@ const Products = () => {
                         <button
                         disabled={page === totalPages}
                         onClick={() => setPage(page + 1)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                         >
                             Next
                         </button>
