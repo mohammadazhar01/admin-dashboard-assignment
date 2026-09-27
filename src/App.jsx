@@ -5,6 +5,7 @@ import LoginPage from './pages/login'
 import Products from './pages/Products'
 import ProductDetails from './pages/ProductDetails'
 import AddProduct from './pages/AddProduct'
+import EditProduct from './pages/EditProduct'
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path='/products' element={<Products />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/products/add" element={<AddProduct />} />
+        <Route path="/products/:id/edit" element={<EditProduct /> } />
       </Routes>
     </BrowserRouter>
   )
